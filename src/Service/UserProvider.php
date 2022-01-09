@@ -9,15 +9,25 @@ class UserProvider
     {
         $this->httpClient = $httpClient;
     }
-    public function getuserIdsGeoLocation(float $latude, float $longtude): array
+    public function getuserIdsGeoLocation(float $minlatude, float $maxlongtude): array
     {
         $userThisJson = $this->httpClient->get('https://jsonplaceholder.typicode.com/users');
+    
         $response= $userThisJson->getBody()->getContents();
+        dd($response);
         $useres = json_decode($response);
-        foreach($useres as $id=>$user)
+        $userId = [];
+        foreach($useres as $user)
         {
-            $location = $user->address->geo;
-            dd($location);
+            $location =(float) $user->address->geo->lat;
+
+            if($location >=$minlatude && $location < $maxlongtude)
+            {
+                $userId[]= $user->id; 
+            }
+          
+           
         }
+        return $userId;
     }
 }
